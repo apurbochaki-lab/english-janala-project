@@ -5,6 +5,7 @@ const loadLessons = () => {
 }
 loadLessons();
 
+// Show Lessons -$ named buttons
 const displayLessons = (lessons) => {
     // 1. Get the container & make empty
     let levelContainer = document.getElementById("level-container")
@@ -35,7 +36,6 @@ const loadLevelWord = (id) => {
     fetch(url)
         .then(res => res.json())
         .then(data => {
-
             // Lesson btns highlight feature
             removeActive()
             const clickBtn = document.getElementById(`lesson-btn-${id}`)
@@ -44,14 +44,13 @@ const loadLevelWord = (id) => {
             displayLevelWord(data.data)
         })
 }
-
 const displayLevelWord = (words) => {
     // Get container
     const levelWordsContainer = document.getElementById("level-words-container");
     levelWordsContainer.innerHTML = "";
 
     // Empty Lesson condition
-    if(words.length == 0) {
+    if (words.length == 0) {
         levelWordsContainer.innerHTML = `
         <div class="text-center col-span-full py-8 space-y-5">
             <img class="mx-auto" src="./assets/alert-error.png" alt="">
@@ -64,14 +63,17 @@ const displayLevelWord = (words) => {
 
     words.forEach(word => {
         // Get Container
+        // console.log(word.id)
         const wordsCard = document.createElement("div");
         wordsCard.innerHTML = `
         <div class="bg-white rounded-xl shadow-sm text-center py-15 px-5 space-y-4">
-            <h2 class="text-2xl font-bold">${word.word? word.word : "শব্দ পাওয়া যায়নি"}</h2>
+            <h2 class="text-2xl font-bold">${word.word ? word.word : "শব্দ পাওয়া যায়নি"}</h2>
             <p class="font-semibold">Meaning /Pronounciation</p>
-            <h2 class="text-2xl font-semibold bangla-font">"${word.meaning? word.meaning : "অর্থ পাওয়া যায়নি"} / ${word.pronunciation? word.pronunciation : "উচ্চারণ পাওয়া যায়নি"}"</h2>
+            <h2 class="text-2xl font-semibold bangla-font">"${word.meaning ? word.meaning : "অর্থ পাওয়া যায়নি"} / ${word.pronunciation ? word.pronunciation : "উচ্চারণ পাওয়া যায়নি"}"</h2>
             <div class="flex justify-between items-center">
-                <button onclick="my_modal_1.showModal()" id="info-btn" class="btn bg-[#1A91FF]/10 hover:bg-[#1A91FF]/50"><i class="fa-solid fa-circle-info"></i></button>
+
+                <button onclick="loadWordsDetail(${word.id})" id="info-btn" class="btn bg-[#1A91FF]/10 hover:bg-[#1A91FF]/50"><i class="fa-solid fa-circle-info"></i></button>
+
                 <button id="vol-btn" class="btn bg-[#1A91FF]/10 hover:bg-[#1A91FF]/50"><i class="fa-solid fa-volume-high"></i></button>
             </div>
         </div>
@@ -80,3 +82,47 @@ const displayLevelWord = (words) => {
     })
 }
 
+
+
+
+// Show Modal when click in info button of cards
+const loadWordsDetail = async(id) => {
+    const url = `https://openapi.programming-hero.com/api/word/${id}`
+    const res = await fetch(url);
+    const details = await res.json();
+    displayWordsDetail(details.data);
+
+}
+const displayWordsDetail = (details) => {
+    // console.log(details)
+
+    const wordModal = document.getElementById("details-container");
+    wordModal.innerHTML = `
+    
+                <div class="text-2xl font-bold">
+                    <h2>${details.word? details.word : "শব্দ পাওয়া যায়নি⚠️"} (<i class="fa-solid fa-microphone-lines"></i> : <span class="bangla-font">${details.pronunciation? details.pronunciation : "উচ্চারণ পাওয়া যায়নি⚠️"}</span>)
+                    </h2>
+                </div>
+
+                <div class="space-y-1">
+                    <p class="font-semibold text-[20px]">Meaning</p>
+                    <p class="font-medium text-[20px] bangla-font">${details.meaning? details.meaning : "অর্থ পাওয়া যায়নি⚠️"}</p>
+                </div>
+
+                <div class="space-y-1">
+                    <p class="font-semibold text-[20px]">Example</p>
+                    <p class="text-[20px]">${details.sentence? details.sentence : "বাক্য পাওয়া যায়নি⚠️"}</p>
+                </div>
+
+                <div class="space-y-2">
+                    <h2 class="font-semibold bangla-font text-[20px]">সমার্থক শব্দ গুলো</h2>
+                    <div class="flex gap-2 flex-col md:flex-row">
+                        <span class="btn bg-[#EDF7FF] text-[20px]">${details.synonyms[0]}</span>
+                        <span class="btn bg-[#EDF7FF] text-[20px]">${details.synonyms[1]}</span>
+                        <span class="btn bg-[#EDF7FF] text-[20px]">${details.synonyms[2]}</span>
+                    </div>
+                </div>
+    `
+
+    document.getElementById("word_modal").showModal();
+}
