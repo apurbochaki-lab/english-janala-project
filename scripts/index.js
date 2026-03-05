@@ -16,6 +16,13 @@ const manageSpinner = (status) => {
     }
 }
 
+// Text to Speech
+function pronounceWord(word) {
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = "en-EN"; // English
+    window.speechSynthesis.speak(utterance);
+}
+
 // Show Lessons -$ named buttons
 const displayLessons = (lessons) => {
     // 1. Get the container & make empty
@@ -85,9 +92,9 @@ const displayLevelWord = (words) => {
             <h2 class="text-2xl font-semibold bangla-font">"${word.meaning ? word.meaning : "অর্থ পাওয়া যায়নি"} / ${word.pronunciation ? word.pronunciation : "উচ্চারণ পাওয়া যায়নি"}"</h2>
             <div class="flex justify-between items-center">
 
-                <button onclick="loadWordsDetail(${word.id})" id="info-btn" class="btn bg-[#1A91FF]/10 hover:bg-[#1A91FF]/50"><i class="fa-solid fa-circle-info"></i></button>
+                <button onclick="loadWordsDetail(${word.id})" class="btn bg-[#1A91FF]/10 hover:bg-[#1A91FF]/50"><i class="fa-solid fa-circle-info"></i></button>
 
-                <button id="vol-btn" class="btn bg-[#1A91FF]/10 hover:bg-[#1A91FF]/50"><i class="fa-solid fa-volume-high"></i></button>
+                <button onclick="pronounceWord('${word.word}')" class="btn bg-[#1A91FF]/10 hover:bg-[#1A91FF]/50"><i class="fa-solid fa-volume-high"></i></button>
             </div>
         </div>
         `
@@ -152,13 +159,13 @@ document.getElementById("search-btn").addEventListener("click", () => {
     // console.log(searchValue)
 
     fetch("https://openapi.programming-hero.com/api/words/all")
-    .then(res => res.json())
-    .then(data => {
-        const allWords = data.data;
-        const filterWords = allWords.filter(word => word.word.toLowerCase().includes(searchValue))
-        // console.log(filterWords)
-        displayLevelWord(filterWords);
-        removeActive()
-        serachInput.value = ""
-    })
+        .then(res => res.json())
+        .then(data => {
+            const allWords = data.data;
+            const filterWords = allWords.filter(word => word.word.toLowerCase().includes(searchValue))
+            // console.log(filterWords)
+            displayLevelWord(filterWords);
+            removeActive()
+            serachInput.value = ""
+        })
 })
