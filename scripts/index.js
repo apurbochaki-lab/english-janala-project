@@ -5,6 +5,17 @@ const loadLessons = () => {
 }
 loadLessons();
 
+// Loading Effect
+const manageSpinner = (status) => {
+    if (status == true) {
+        document.getElementById("spinner-container").classList.remove("hidden")
+        document.getElementById("level-words-container").classList.add("hidden")
+    } else {
+        document.getElementById("level-words-container").classList.remove("hidden")
+        document.getElementById("spinner-container").classList.add("hidden")
+    }
+}
+
 // Show Lessons -$ named buttons
 const displayLessons = (lessons) => {
     // 1. Get the container & make empty
@@ -32,6 +43,7 @@ const removeActive = () => {
 
 
 const loadLevelWord = (id) => {
+    manageSpinner(true);
     const url = `https://openapi.programming-hero.com/api/level/${id}`
     fetch(url)
         .then(res => res.json())
@@ -58,6 +70,7 @@ const displayLevelWord = (words) => {
             <h2 class="font-medium text-4xl bangla-font">নেক্সট Lesson এ যান</h2>
         </div>
         `;
+        manageSpinner(false);
         return;
     };
 
@@ -80,13 +93,20 @@ const displayLevelWord = (words) => {
         `
         levelWordsContainer.appendChild(wordsCard)
     })
+    manageSpinner(false);
 }
 
-
-
+// Synonym Showing Logic
+const createElement = (arr) => {
+    if (arr.length == 0) {
+        return `<p class="bangla-font bangla-font">সমার্থক শব্দ পাওয়া যায়নি</p>`;
+    }
+    const htmlElements = arr.map(ele => `<span class="btn bg-[#EDF7FF] text-[20px]">${ele}</span>`);
+    return (htmlElements.join(" "));
+};
 
 // Show Modal when click in info button of cards
-const loadWordsDetail = async(id) => {
+const loadWordsDetail = async (id) => {
     const url = `https://openapi.programming-hero.com/api/word/${id}`
     const res = await fetch(url);
     const details = await res.json();
@@ -100,27 +120,23 @@ const displayWordsDetail = (details) => {
     wordModal.innerHTML = `
     
                 <div class="text-2xl font-bold">
-                    <h2>${details.word? details.word : "শব্দ পাওয়া যায়নি⚠️"} (<i class="fa-solid fa-microphone-lines"></i> : <span class="bangla-font">${details.pronunciation? details.pronunciation : "উচ্চারণ পাওয়া যায়নি⚠️"}</span>)
+                    <h2>${details.word ? details.word : "শব্দ পাওয়া যায়নি⚠️"} (<i class="fa-solid fa-microphone-lines"></i> : <span class="bangla-font">${details.pronunciation ? details.pronunciation : "উচ্চারণ পাওয়া যায়নি⚠️"}</span>)
                     </h2>
                 </div>
 
                 <div class="space-y-1">
                     <p class="font-semibold text-[20px]">Meaning</p>
-                    <p class="font-medium text-[20px] bangla-font">${details.meaning? details.meaning : "অর্থ পাওয়া যায়নি⚠️"}</p>
+                    <p class="font-medium text-[20px] bangla-font">${details.meaning ? details.meaning : "অর্থ পাওয়া যায়নি⚠️"}</p>
                 </div>
 
                 <div class="space-y-1">
                     <p class="font-semibold text-[20px]">Example</p>
-                    <p class="text-[20px]">${details.sentence? details.sentence : "বাক্য পাওয়া যায়নি⚠️"}</p>
+                    <p class="text-[20px]">${details.sentence ? details.sentence : "বাক্য পাওয়া যায়নি⚠️"}</p>
                 </div>
 
                 <div class="space-y-2">
                     <h2 class="font-semibold bangla-font text-[20px]">সমার্থক শব্দ গুলো</h2>
-                    <div class="flex gap-2 flex-col md:flex-row">
-                        <span class="btn bg-[#EDF7FF] text-[20px]">${details.synonyms[0]}</span>
-                        <span class="btn bg-[#EDF7FF] text-[20px]">${details.synonyms[1]}</span>
-                        <span class="btn bg-[#EDF7FF] text-[20px]">${details.synonyms[2]}</span>
-                    </div>
+                    <div class="flex gap-2 flex-col md:flex-row">${createElement(details.synonyms)}</div>
                 </div>
     `
 
