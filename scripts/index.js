@@ -142,3 +142,23 @@ const displayWordsDetail = (details) => {
 
     document.getElementById("word_modal").showModal();
 }
+
+
+
+// Search functionality
+document.getElementById("search-btn").addEventListener("click", () => {
+    const serachInput = document.getElementById("search-input");
+    const searchValue = serachInput.value.trim().toLowerCase();
+    // console.log(searchValue)
+
+    fetch("https://openapi.programming-hero.com/api/words/all")
+    .then(res => res.json())
+    .then(data => {
+        const allWords = data.data;
+        const filterWords = allWords.filter(word => word.word.toLowerCase().includes(searchValue))
+        // console.log(filterWords)
+        displayLevelWord(filterWords);
+        removeActive()
+        serachInput.value = ""
+    })
+})
